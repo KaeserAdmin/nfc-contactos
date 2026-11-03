@@ -177,9 +177,17 @@ if SITIO.exists():
     "<title>No encontrado</title>\n"
 )
 
-# Publica todas las páginas de la carpeta web/ (grabar.html, links.html, ...)
-for pagina in (RAIZ / "web").glob("*.html"):
-    shutil.copy(pagina, SITIO / pagina.name)
+# Publica TODO el contenido de la carpeta web/ (páginas .html, imágenes, css, js, subcarpetas)
+WEB = RAIZ / "web"
+if WEB.exists():
+    for item in WEB.iterdir():
+        if item.name.startswith("."):
+            continue
+        destino = SITIO / item.name
+        if item.is_dir():
+            shutil.copytree(item, destino, dirs_exist_ok=True)
+        else:
+            shutil.copy(item, destino)
 
 vistos, salida, omitidas = set(), [], []
 for a in leer_csv(CSV_IN):
